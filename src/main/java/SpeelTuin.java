@@ -3,6 +3,7 @@ import dao.DienstCategorieDao;
 import dao.GebruikerDao;
 import dao.ProductCategorieDao;
 import domein.*;
+import inputbehandeling.AdvertentieZoekService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -19,10 +20,7 @@ public class SpeelTuin {
         AdvertentieDao ad = new AdvertentieDao(em);
         DienstCategorieDao dd = new DienstCategorieDao(em);
 
-        List<Product> l = pd.zoekOpNaam("Fietsen").getProductenMetDezeCategorie();
-        for (Product product : l) {
-            System.out.println(product);
-        }
+        new AdvertentieZoekService(gd.zoekOpGebruikersnaam("David")).start();
 
 
     }

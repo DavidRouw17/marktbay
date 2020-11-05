@@ -73,15 +73,8 @@ public class AdvertentieService {
         List<ProductCategorie> catList = pd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
         catList.forEach(c -> catNamen.add(c.getCategorie()));
-        System.out.println("Voeg hier de categorie(en) toe die van toepassing zijn op uw product.");
-        System.out.println("U kunt kiezen uit: ");
-        catNamen.forEach(System.out::println);
-        System.out.println();
-        System.out.println("Typ hier je keuzes, gescheiden door een komma en een spatie.");
-        System.out.println("Voorbeeld: optie1, optie 2");
-        System.out.print("Keuze(s): ");
-        String keuzes = gebruikerInput();
-        String[] keuzesSplit = keuzes.split(", ");
+        maakCatlijst(catNamen);
+        String[] keuzesSplit = maakCatlijst(catNamen);
 
         for (String s : keuzesSplit) {
             try{
@@ -95,10 +88,7 @@ public class AdvertentieService {
 
     }
 
-    private void voegDienstCategorieToe(Advertentie a) {
-        List<DienstCategorie> catList = dd.findAll();
-        ArrayList<String> catNamen = new ArrayList<>();
-        catList.forEach(c -> catNamen.add(c.getCategorie()));
+    private String[] maakCatlijst(ArrayList<String> catNamen) {
         System.out.println("Voeg hier de categorie(en) toe die van toepassing zijn op uw product.");
         System.out.println("U kunt kiezen uit: ");
         catNamen.forEach(System.out::println);
@@ -108,6 +98,14 @@ public class AdvertentieService {
         System.out.print("Keuze(s): ");
         String keuzes = gebruikerInput();
         String[] keuzesSplit = keuzes.split(", ");
+        return keuzesSplit;
+    }
+
+    private void voegDienstCategorieToe(Advertentie a) {
+        List<DienstCategorie> catList = dd.findAll();
+        ArrayList<String> catNamen = new ArrayList<>();
+        catList.forEach(c -> catNamen.add(c.getCategorie()));
+        String[] keuzesSplit = maakCatlijst(catNamen);
 
         for (String s : keuzesSplit) {
             try{

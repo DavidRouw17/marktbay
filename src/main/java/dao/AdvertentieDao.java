@@ -18,5 +18,5 @@ public class AdvertentieDao extends GeneriekeDao<Advertentie> {
         return namedQuery.getResultList();
     }
 
-    
+
 }

@@ -2,6 +2,7 @@ package app;
 
 import domein.Gebruiker;
 import inputbehandeling.AdvertentieService;
+import inputbehandeling.AdvertentieZoekService;
 
 import static app.GebruikerInput.gebruikerInput;
 
@@ -24,6 +25,7 @@ public class Gebruikersmenu {
 
         switch (gebruikerInput()){
             case "1":
+                new AdvertentieZoekService(g).start(); break;
             case "2":
             case "3":
                 new AdvertentieService(g).nieuweAdvertentie(); break;
