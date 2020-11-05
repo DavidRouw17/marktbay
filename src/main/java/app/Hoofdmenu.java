@@ -21,8 +21,7 @@ public class Hoofdmenu {
 
         switch (gebruikerInput()) {
             case "1":
-                System.out.println("Dit komt nog!"); break;
-                //TODO Inloggen maken!
+                new Inlogmenu().start(); break;
             case "2":
                 new GebruikerService().nieuweGebruiker(); break;
             case "x":

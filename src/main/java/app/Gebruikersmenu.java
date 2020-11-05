@@ -26,7 +26,7 @@ public class Gebruikersmenu {
             case "1":
             case "2":
             case "3":
-                new AdvertentieService(g).nieuweAdvertentie();
+                new AdvertentieService(g).nieuweAdvertentie(); break;
             case "x":
                 System.out.println("Fijne dag gewenst!"); break;
             case "terug":

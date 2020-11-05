@@ -22,10 +22,10 @@ public class AdvertentieService {
     AdvertentieDao ad = new AdvertentieDao(em);
     ProductCategorieDao pd = new ProductCategorieDao(em);
     DienstCategorieDao dd = new DienstCategorieDao(em);
-    Gebruiker g;
+    Gebruiker gebruiker;
 
     public AdvertentieService (Gebruiker g){
-        this.g = g;
+        this.gebruiker = gd.get(g.getId());
     }
 
     public void nieuweAdvertentie(){
@@ -46,7 +46,7 @@ public class AdvertentieService {
             case "2":
                 nieuweDienst(); break;
             case "terug":
-                new Gebruikersmenu().start(g); break;
+                new Gebruikersmenu().start(gebruiker); break;
             default:
                 System.out.println("Input onbekend, probeer het nog eens");
                 nieuweAdvertentie(); break;
@@ -56,7 +56,7 @@ public class AdvertentieService {
     private void nieuwProduct(){
         String titel = verkrijgTitel();
         Double prijs = verkrijgPrijs();
-        Advertentie a = new Product(titel, prijs, g);
+        Advertentie a = new Product(titel, prijs, gebruiker);
         voegProductCategorieToe(a);
         advertentieAfmaken(a);
     }
@@ -64,7 +64,7 @@ public class AdvertentieService {
     private void nieuweDienst(){
         String titel = verkrijgTitel();
         Double prijs = verkrijgPrijs();
-        Advertentie a = new Dienst(titel, prijs, g);
+        Advertentie a = new Dienst(titel, prijs, gebruiker);
         voegDienstCategorieToe(a);
         advertentieAfmaken(a);
     }
@@ -166,13 +166,13 @@ public class AdvertentieService {
         if (gebruikerInput().equals("1")) voegBijlageToe(a);
 
         try {
-            gd.updateAndDetach(g);
+            gd.updateAndDetach(gebruiker);
             System.out.println("Advertentie toegevoegd aan uw profiel!");
         }
         catch (RuntimeException e){
             System.out.println("Er ging iets mis: " + e.getMessage() + ", bel uw java programmeur!");
         }
-        new Gebruikersmenu().start(g);
+        new Gebruikersmenu().start(gebruiker);
     }
 
     private void voegBeschrijvingToe(Advertentie a){

@@ -6,7 +6,10 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@NamedQuery(name = "Advertentie.findAll", query = "SELECT a FROM Advertentie a")
+@NamedQueries({
+        @NamedQuery(name = "Advertentie.findAll", query = "SELECT a FROM Advertentie a"),
+        @NamedQuery(name = "Advertentie.findBySoort", query = "SELECT a FROM Advertentie a where a.soort LIKE :soort")
+})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Advertentie extends GeneriekObject {
 
@@ -36,6 +39,14 @@ public class Advertentie extends GeneriekObject {
         g.addAdvertentie(this);
     }
 
+    public String getTitel() {
+        return titel;
+    }
+
+    public void setTitel(String titel) {
+        this.titel = titel;
+    }
+
     public void setGebruiker(Gebruiker g){
         this.eigenaarAdvertentie = g;
     }
@@ -62,6 +73,14 @@ public class Advertentie extends GeneriekObject {
 
     public void setOmschrijving(String omschrijving) {
         this.omschrijving = omschrijving;
+    }
+
+    public double getPrijs() {
+        return prijs;
+    }
+
+    public void setPrijs(double prijs) {
+        this.prijs = prijs;
     }
 
     @Override

@@ -31,8 +31,16 @@ public class ProductCategorie extends GeneriekObject {
         advList.add(p);
     }
 
+    public List<Product> getProductenMetDezeCategorie(){
+        return advList;
+    }
+
     public String getCategorie() {
         return categorie;
+    }
+
+    public String toString(){
+        return getCategorie();
     }
 
 }

@@ -13,8 +13,8 @@ public class App {
 //        EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
 //        GebruikerDao gd = new GebruikerDao(em);
 //        Gebruiker g = gd.zoekOpGebruikersnaam("David");
-
-        //new AdvertentieService(g).nieuweAdvertentie();
+//
+//        new AdvertentieService(g).nieuweAdvertentie();
         new Hoofdmenu().start();
     }
 

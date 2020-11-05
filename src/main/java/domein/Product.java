@@ -32,5 +32,22 @@ public class Product extends Advertentie {
         //p.addProduct(this);
     }
 
+    public String categorieConvert(){
+        StringBuilder sb = new StringBuilder();
+        List<ProductCategorie> lijst = getCategorieLijst();
+        for (ProductCategorie p : lijst) {
+            sb.append("[" + p.toString() + "]");
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
+
+    public String toString(){
+        return "***************" + "\n" +
+                "Titel: " + getTitel() + "\n" +
+                "Categorie: " + categorieConvert() + "\n" +
+                "Prijs: " + getPrijs() + "\n" +
+                        "***************";
+    }
 
 }

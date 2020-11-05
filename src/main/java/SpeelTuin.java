@@ -1,10 +1,8 @@
-import app.Gebruikersmenu;
 import dao.AdvertentieDao;
 import dao.DienstCategorieDao;
 import dao.GebruikerDao;
 import dao.ProductCategorieDao;
 import domein.*;
-import enums.Bezorgwijze;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -21,6 +19,10 @@ public class SpeelTuin {
         AdvertentieDao ad = new AdvertentieDao(em);
         DienstCategorieDao dd = new DienstCategorieDao(em);
 
+        List<Product> l = pd.zoekOpNaam("Fietsen").getProductenMetDezeCategorie();
+        for (Product product : l) {
+            System.out.println(product);
+        }
 
 
     }
@@ -29,6 +31,7 @@ public class SpeelTuin {
         EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
         GebruikerDao gd = new GebruikerDao(em);
         ProductCategorieDao pd = new ProductCategorieDao(em);
+        DienstCategorieDao dd = new DienstCategorieDao(em);
         AdvertentieDao ad = new AdvertentieDao(em);
 
         Gebruiker d = new Gebruiker("David", "David", "David");
@@ -40,6 +43,8 @@ public class SpeelTuin {
         pd.slaOpInDB(new ProductCategorie("Tegels"));
         pd.slaOpInDB(new ProductCategorie("Autoos"));
         pd.slaOpInDB(new ProductCategorie("Trump"));
+        dd.slaOpInDB(new DienstCategorie("Schilderen"));
+        dd.slaOpInDB(new DienstCategorie("Strijkdienst"));
 
         p.addCategorie(pd.zoekOpNaam("Fietsen"));
 

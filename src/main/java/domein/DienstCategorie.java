@@ -1,6 +1,7 @@
 package domein;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,7 +18,7 @@ public class DienstCategorie extends GeneriekObject {
     @JoinTable(name = "dienstdienstcategorie",
             joinColumns = @JoinColumn(name = "categorie"),
             inverseJoinColumns = @JoinColumn(name = "dienst"))
-    private List<Dienst> advList;
+    private List<Dienst> advList = new ArrayList<>();
 
         public DienstCategorie() {
         }
@@ -32,6 +33,14 @@ public class DienstCategorie extends GeneriekObject {
 
         public void addDienst(Dienst d){
             advList.add(d);
+        }
+
+        public List<Dienst> getDienstenMetDezeCategorie(){
+            return advList;
+        }
+
+        public String toString(){
+            return getCategorie();
         }
 
     }
