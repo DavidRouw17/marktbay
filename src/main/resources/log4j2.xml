@@ -25,7 +25,7 @@
         <Logger name="org.example" additivity="true">
             <appender-ref ref="fileLogger" level="all"/>
         </Logger>
-        <Root level="error">
+        <Root level="debug">
             <AppenderRef ref="console"/>
         </Root>
     </Loggers>

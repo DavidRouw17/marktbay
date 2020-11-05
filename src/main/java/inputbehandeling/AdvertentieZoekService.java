@@ -2,7 +2,9 @@ package inputbehandeling;
 
 import app.Gebruikersmenu;
 import dao.DienstCategorieDao;
+import dao.GebruikerDao;
 import dao.ProductCategorieDao;
+import domein.Advertentie;
 import domein.DienstCategorie;
 import domein.Gebruiker;
 import domein.ProductCategorie;
@@ -17,12 +19,13 @@ import static app.GebruikerInput.gebruikerInput;
 public class AdvertentieZoekService {
 
     EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
+    GebruikerDao gd = new GebruikerDao(em);
     ProductCategorieDao pd = new ProductCategorieDao(em);
     DienstCategorieDao dd = new DienstCategorieDao(em);
     private Gebruiker gebruiker;
 
     public AdvertentieZoekService(Gebruiker g){
-        this.gebruiker = g;
+        this.gebruiker = gd.get(g.getId());
     }
 
     public void start(){
@@ -30,6 +33,7 @@ public class AdvertentieZoekService {
         System.out.println("[1] Een product (op categorie)");
         System.out.println("[2] Een dienst (op categorie)");
         System.out.println("[terug] Ga terug naar gebruikersmenu");
+        System.out.print("Uw keuze: ");
 
         switch(gebruikerInput()){
             case "1":
@@ -44,7 +48,7 @@ public class AdvertentieZoekService {
         }
     }
 
-    public void zoekDienstOpCategorie(){
+    private void zoekDienstOpCategorie(){
         System.out.println("Je kan kiezen uit de volgende categorieën: ");
         List<DienstCategorie> catList = dd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
@@ -63,7 +67,7 @@ public class AdvertentieZoekService {
         }
     }
 
-    public void zoekProductOpCategorie(){
+    private void zoekProductOpCategorie(){
         System.out.println("Je kan kiezen uit de volgende categorieën: ");
         List<ProductCategorie> catList = pd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
@@ -81,4 +85,14 @@ public class AdvertentieZoekService {
             zoekDienstOpCategorie();
         }
     }
+
+    public void zoekEigenAdvertenties(){
+        System.out.println();
+        System.out.println("Uw advertenties: ");
+        System.out.println();
+        List<Advertentie> advList = gebruiker.getAangebodenAdvertenties();
+        advList.forEach(System.out::println);
+        new Gebruikersmenu().start(gebruiker);
+    }
+
 }

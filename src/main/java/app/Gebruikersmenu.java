@@ -27,6 +27,7 @@ public class Gebruikersmenu {
             case "1":
                 new AdvertentieZoekService(g).start(); break;
             case "2":
+                new AdvertentieZoekService(g).zoekEigenAdvertenties(); break;
             case "3":
                 new AdvertentieService(g).nieuweAdvertentie(); break;
             case "x":

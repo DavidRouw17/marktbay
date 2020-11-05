@@ -9,9 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,9 @@ class GeneriekeDaoTest {
 
     @Mock
     private Gebruiker gebruikerMock;
+
+    @Mock
+    private TypedQuery<Gebruiker> tqMock;
 
     @Test
     void get() {
@@ -111,6 +115,17 @@ class GeneriekeDaoTest {
         //then
         verify(emMock).contains(gebruikerMock);
 
+    }
+
+    @Test
+    void findAllWithNamedQuery(){
+        //given
+        when(emMock.createNamedQuery(anyString(), eq(Gebruiker.class))).thenReturn(tqMock);
+        //when
+        target.findAllWithNamedQuery();
+        //
+        verify(emMock).createNamedQuery(anyString(), eq(Gebruiker.class));
+        verify(tqMock).getResultList();
     }
 
 }

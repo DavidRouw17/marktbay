@@ -1,6 +1,7 @@
 package dao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
@@ -59,7 +60,8 @@ public abstract class GeneriekeDao<T> {
     }
 
     public List<T> findAllWithNamedQuery() {
-        return em.createNamedQuery(typeSimple() + ".findAll", T()).getResultList();
+        TypedQuery<T> tq = em.createNamedQuery(typeSimple() + ".findAll", T());
+        return tq.getResultList();
     }
 
     public int dbSize(){

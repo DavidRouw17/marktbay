@@ -51,6 +51,10 @@ public class Advertentie extends GeneriekObject {
         this.eigenaarAdvertentie = g;
     }
 
+    public String getEigenaarNaam(){
+        return eigenaarAdvertentie.getGebruikersnaam();
+    }
+
     public String getBijlage() {
         return bijlage;
     }

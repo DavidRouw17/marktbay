@@ -47,6 +47,7 @@ public class Product extends Advertentie {
                 "Titel: " + getTitel() + "\n" +
                 "Categorie: " + categorieConvert() + "\n" +
                 "Prijs: " + getPrijs() + "\n" +
+                "Aanbieder: " + getEigenaarNaam() + "\n" +
                         "***************";
     }
 
