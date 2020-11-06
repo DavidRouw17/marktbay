@@ -46,11 +46,11 @@ public class GebruikerService {
             System.out.println("U wordt nu doorverwezen naar het gebruikersmenu!");
             System.out.println("******************************************");
 
-            new Gebruikersmenu().start(nieuweGebruiker);
+            new Gebruikersmenu(c).start(nieuweGebruiker);
 
         } catch (AanmaakGebruikerAfgebrokenException e) {
             System.out.println("Registratie afgebroken. Graag tot ziens!");
-            new Hoofdmenu().start();
+            new Hoofdmenu(c).start();
         }
 
     }
@@ -64,8 +64,9 @@ public class GebruikerService {
 
         boolean teLang = gebruikersnaam.length() > 20;
         boolean bestaatAl = bestaandeNamen.contains(gebruikersnaam);
+        boolean isLeeg = gebruikersnaam.trim().length() == 0;
 
-        while (teLang || bestaatAl || gebruikersnaam.length() == 0) {
+        while (teLang || bestaatAl || isLeeg) {
             if (teLang) {
                 System.out.println("Gebruikersnaam te lang! Probeer het nog eens, of typ 'exit'");
                 System.out.print("Gewenste gebruikersnaam (max 20 tekens): ");
@@ -82,6 +83,7 @@ public class GebruikerService {
 
             teLang = gebruikersnaam.length() > 20;
             bestaatAl = bestaandeNamen.contains(gebruikersnaam);
+            isLeeg = gebruikersnaam.trim().length() == 0;
 
         }
         return gebruikersnaam;
@@ -93,7 +95,7 @@ public class GebruikerService {
 
         boolean teLang = email.length() > 250;
         boolean bestaatAl = bestaandeEmails.contains(email);
-        boolean legeString = email.length()==0;
+        boolean legeString = email.trim().length() == 0;
         boolean spatieInMail = email.split(" ").length != 1;
 
         while (teLang || bestaatAl || legeString || spatieInMail) {
@@ -106,7 +108,7 @@ public class GebruikerService {
             } else if (legeString) {
                 System.out.println("Emailadres mag niet niks zijn! Probeer het nog eens, of typ 'exit'");
                 System.out.println("Uw emailadres: ");
-            } else{
+            } else {
                 System.out.println("Emailadres kan geen spatie bevatten! Probeer het nog eens, of typ 'exit'");
                 System.out.println("Uw emailadres: ");
             }
@@ -116,24 +118,31 @@ public class GebruikerService {
 
             teLang = email.length() > 250;
             bestaatAl = bestaandeEmails.contains(email);
-            legeString = email.length()==0;
+            legeString = email.trim().length() == 0;
             spatieInMail = email.split(" ").length != 1;
 
         }
         return email;
     }
 
-     String wachtwoordMetChecks(String w) {
+    String wachtwoordMetChecks(String w) {
         String wachtwoord = w;
         boolean teLang = wachtwoord.length() > 250;
+        boolean isLeeg = wachtwoord.trim().length() == 0;
 
-        while (teLang) {
-            System.out.println("Wachtwoord te lang! Probeer het nog eens, of typ 'exit'");
-            System.out.println("Uw wachtwoord: ");
+        while (teLang || isLeeg) {
+            if (teLang) {
+                System.out.println("Wachtwoord te lang! Probeer het nog eens, of typ 'exit'");
+                System.out.println("Uw wachtwoord: ");
+            } else {
+                System.out.println("Wachtwoord mag niet leeg zijn! Probeer het nog eens, of typ 'exit'");
+                System.out.println("Uw wachtwoord: ");
+            }
             wachtwoord = c.vraagInput();
             if (wachtwoord.equals("exit")) throw new AanmaakGebruikerAfgebrokenException();
 
             teLang = wachtwoord.length() > 250;
+            isLeeg = wachtwoord.trim().length() == 0;
         }
 
         System.out.print("Typ nogmaals uw wachtwoord, ter verificatie: ");
@@ -146,7 +155,7 @@ public class GebruikerService {
         return wachtwoord;
     }
 
-    private void verzendwijzenKiezen(Gebruiker g) {
+     void verzendwijzenKiezen(Gebruiker g) {
         System.out.println();
         System.out.println("Kies uw verzendwijzen, u kunt kiezen uit:");
         for (Bezorgwijze value : Bezorgwijze.values()) {
@@ -156,7 +165,7 @@ public class GebruikerService {
         System.out.println("Typ uw keuze(s), gescheiden door een komma en een spatie.");
         System.out.println("Bijvoorbeeld: optie1, optie2");
         System.out.print("Uw keuzes: ");
-        String keuzes = gebruikerInput();
+        String keuzes = c.vraagInput();
         String[] keuzesSplit = keuzes.split(", ");
         for (String s : keuzesSplit) {
             switch (s) {
@@ -185,14 +194,30 @@ public class GebruikerService {
         System.out.println("Uw voorkeuren zijn toegevoegd!");
     }
 
-    private void adresToevoegen(Gebruiker g) {
+     void adresToevoegen(Gebruiker g) {
         System.out.println();
         System.out.println("Omdat u voor de optie 'thuis afhalen' heeft gekozen, hebben we ook uw adres nodig:");
         System.out.print("Uw adres: ");
-        String adres = gebruikerInput();
+        String adres = c.vraagInput();
+        boolean teLang = adres.length() > 255;
+        boolean isLeeg = adres.trim().length() == 0;
+         while (teLang || isLeeg) {
+             if (teLang) {
+                 System.out.println("Adres te lang! Probeer het nog eens, of typ 'exit'");
+                 System.out.println("Uw adres: ");
+             } else {
+                 System.out.println("Adres mag niet leeg zijn! Probeer het nog eens, of typ 'exit'");
+                 System.out.println("Uw adres: ");
+             }
+             adres = c.vraagInput();
+             if (adres.equals("exit")) throw new AanmaakGebruikerAfgebrokenException();
+
+             teLang = adres.length() > 250;
+             isLeeg = adres.trim().length() == 0;
+         }
         g.setAdres(adres);
 
-        //todo if time permits nog checks toevoegen
+
     }
 
 

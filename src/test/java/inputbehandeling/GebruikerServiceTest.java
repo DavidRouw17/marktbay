@@ -1,32 +1,21 @@
 package inputbehandeling;
 
-import app.GebruikerInput;
-import app.Gebruikersmenu;
 import dao.GebruikerDao;
 import domein.Gebruiker;
 import exceptions.AanmaakGebruikerAfgebrokenException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import util.Console;
 import util.ConsoleReader;
-import util.ConsoleWriter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,27 +23,48 @@ class GebruikerServiceTest {
     @Mock
     ConsoleReader cr;
 
-    @Mock
-    ConsoleWriter cw;
-
-
     Console cMock;
 
     private final EntityManager em = Persistence.createEntityManagerFactory("H2").createEntityManager();
     private final GebruikerDao gd = new GebruikerDao(em);
     private GebruikerService target;
-
+    Gebruiker david;
 
     @BeforeEach
-    void setUp(){
-        Gebruiker david = new Gebruiker("David", "David@David.nl", "David!");
+    void setUp() {
+        david = new Gebruiker("David", "David@David.nl", "David!");
         gd.slaOpInDB(david);
         cMock = new Console();
+        cMock.setConsoleReader(cr);
         target = new GebruikerService(em, cMock);
     }
 
     @Test
-    void gebruikersnaamDieNietBestaatKanGekozenWorden(){
+    void testOfGebruikerAangemaaktKanWorden(){
+        //given
+        when(cMock.vraagInput()).thenReturn("Henk", "Henk@Gmail.com", "Henk", "Henk", "rembours", "x");
+        //when
+        target.nieuweGebruiker();
+        //then
+        assertEquals("Henk@Gmail.com", gd.zoekOpGebruikersnaam("Henk").getEmailadres());
+        assertEquals("Henk", gd.zoekOpGebruikersnaam("Henk").getGebruikersnaam());
+        assertEquals(String.valueOf("Henk".hashCode()), gd.zoekOpGebruikersnaam("Henk").getWachtwoord());
+        assertEquals("REMBOURS", gd.zoekOpGebruikersnaam("Henk").getBezorgwijzen().get(0).toString());
+    }
+
+    @Test
+    void testOfGebruikerAanmakenGecanceldKanWorden(){
+        //given
+        when(cMock.vraagInput()).thenReturn("David", "exit", "x");
+        //when
+        target.nieuweGebruiker();
+
+
+
+    }
+
+    @Test
+    void gebruikersnaamDieNietBestaatKanGekozenWorden() {
         //given
         String naam = "Bert";
         //when
@@ -66,7 +76,7 @@ class GebruikerServiceTest {
     @Test
     void gebruikersnaamDieBestaatKanNietGekozenWorden() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Bert");
 
         String naam = "David";
@@ -80,7 +90,7 @@ class GebruikerServiceTest {
     @Test
     void gebruikersnaamDieTeLangIsKanNietGekozenWorden() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Bert");
 
         String naam = "Ditzijnmeerdan20tekensendatmagniet!";
@@ -95,7 +105,7 @@ class GebruikerServiceTest {
     @Test
     void gebruikersnaamZonderTekensKanNietGekozenWorden() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Bert");
 
         String naam = "";
@@ -110,15 +120,12 @@ class GebruikerServiceTest {
     @Test
     void gebruikerKanExitKiezenAlsAccountAlBestaat() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("exit");
 
         String naam = "David";
-        System.out.println(gd.gebruikersNamenLijst());
         //when+then
-        assertThrows(AanmaakGebruikerAfgebrokenException.class, ()-> {
-            target.gebruikersnaamMetChecks(naam);
-        });
+        assertThrows(AanmaakGebruikerAfgebrokenException.class, () -> target.gebruikersnaamMetChecks(naam));
     }
 
     @Test
@@ -134,9 +141,9 @@ class GebruikerServiceTest {
     }
 
     @Test
-    void emailDieBestaatKanNietGekozenWorden(){
+    void emailDieBestaatKanNietGekozenWorden() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Bert@gmail.com");
 
         String email = "David@David.nl";
@@ -148,9 +155,9 @@ class GebruikerServiceTest {
     }
 
     @Test
-    void emailMetMeerDan250CharsKanNietGekozenWorden(){
+    void emailMetMeerDan250CharsKanNietGekozenWorden() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Bert@gmail.com");
 
         String email = "Loremipsumdolorsitamet,nonummyligulavolutpathacintegernonummy." +
@@ -165,9 +172,9 @@ class GebruikerServiceTest {
     }
 
     @Test
-    void emailZonderInhoudKanNietGekozenWorden(){
+    void emailZonderInhoudKanNietGekozenWorden() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Bert@gmail.com");
 
         String email = "";
@@ -179,9 +186,9 @@ class GebruikerServiceTest {
     }
 
     @Test
-    void emailMetSpatieKanNietGekozenWorden(){
+    void emailMetSpatieKanNietGekozenWorden() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Bert@gmail.com");
 
         String email = "Bert @gmail.com";
@@ -195,21 +202,18 @@ class GebruikerServiceTest {
     @Test
     void gebruikerKanExitKiezenAlsEmailAlBestaat() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("exit");
 
         String mail = "David@David.nl";
-        System.out.println(gd.gebruikersNamenLijst());
         //when+then
-        assertThrows(AanmaakGebruikerAfgebrokenException.class, ()-> {
-            target.emailadresMetChecks(mail);
-        });
+        assertThrows(AanmaakGebruikerAfgebrokenException.class, () -> target.emailadresMetChecks(mail));
     }
 
     @Test
-    void WachtwoordVerificatieWerktAlsHetGoedGaat(){
+    void wachtwoordVerificatieWerktAlsHetGoedGaat() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Wachtwoord");
 
         String wachtwoord = "Wachtwoord";
@@ -221,9 +225,9 @@ class GebruikerServiceTest {
     }
 
     @Test
-    void WachtwoordVerificatieWerktNietAlsHetFoutGaat(){
+    void wachtwoordVerificatieWerktNietAlsHetFoutGaat() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("W8chtwoord", "Wachtwoord");
 
         String wachtwoord = "Wachtwoord";
@@ -235,9 +239,9 @@ class GebruikerServiceTest {
     }
 
     @Test
-    void WachtwoordVerificatieWerktNietWachtwoordTeLangIs() {
+    void wachtwoordVerificatieWerktNietAlsWachtwoordTeLangIs() {
         //given
-        cMock.setConsoleReader(cr);
+
         when(cMock.vraagInput()).thenReturn("Wachtwoord", "Wachtwoord");
 
         String wachtwoord = "Loremipsumdolorsitamet,nonummyligulavolutpathacintegernonummy." +
@@ -249,5 +253,106 @@ class GebruikerServiceTest {
 
         //then
         assertEquals("Wachtwoord", result);
+    }
+
+    @Test
+    void wachtwoordVerificatieWerktNietAlsWachtwoordLeegIs() {
+        //given
+
+        when(cMock.vraagInput()).thenReturn("Wachtwoord", "Wachtwoord");
+
+        String wachtwoord = "";
+        //when
+        String result = target.wachtwoordMetChecks(wachtwoord);
+
+        //then
+        assertEquals("Wachtwoord", result);
+    }
+
+    @Test
+    void gebruikerKanExitKiezenAlsWachtwoordAanmakenMisGaat() {
+        //given
+        when(cMock.vraagInput()).thenReturn("exit");
+
+        String ww = "";
+        //when+then
+        assertThrows(AanmaakGebruikerAfgebrokenException.class, () -> target.wachtwoordMetChecks(ww));
+    }
+
+    @Test
+    void verzendWijzenToevoegenGaatGoed() {
+        //given
+        when(cMock.vraagInput()).thenReturn("verzenden, magazijn");
+        //when
+        target.verzendwijzenKiezen(david);
+        //then
+        assertEquals(2, david.getBezorgwijzen().size());
+    }
+
+    @Test
+    void verzendWijzenToevoegenGaatFoutWaardoorNiksWordtToegevoegd() {
+        //given
+        when(cMock.vraagInput()).thenReturn("verzenden,magazijn", "rembours");
+        //when
+        target.verzendwijzenKiezen(david);
+        //then
+        assertEquals(1, david.getBezorgwijzen().size());
+    }
+
+    @Test
+    void verzendWijzenToevoegenKanNietLeegZijnEnAfhalenWerkt() {
+        //given
+        when(cMock.vraagInput()).thenReturn("", "afhalen", "Adres");
+        //when
+        target.verzendwijzenKiezen(david);
+        //then
+        assertEquals(1, david.getBezorgwijzen().size());
+        assertEquals("Adres", david.getAdres());
+    }
+
+    @Test
+    void adresToevoegenWerkt(){
+        //given
+        String adres = "Adres!";
+        when(cMock.vraagInput()).thenReturn(adres);
+        //when
+        target.adresToevoegen(david);
+        //
+        assertEquals(adres, david.getAdres());
+    }
+
+    @Test
+    void adresMagNietLeegZijn(){
+        //given
+        String adres = "Adres!";
+        when(cMock.vraagInput()).thenReturn(" ", adres);
+        //when
+        target.adresToevoegen(david);
+        //
+        assertEquals(adres, david.getAdres());
+    }
+
+    @Test
+    void adresMagNietTeLangZijn(){
+        //given
+        String adres = "Adres!";
+        when(cMock.vraagInput()).thenReturn("Loremipsumdolorsitamet,nonummyligulavolutpathacintegernonummy." +
+                "Suspendisseultricies,congueetiamtellus,eratlibero,nullaeleifend," +
+                "maurispellentesque.Suspendisseintegerpraesentvel," +
+                "integergravidamauris,fringillavehiculalacinianonsjdflk;ajdflkjasfkjsdf;lkjasdfadfasdfasdd@gmail.com", adres);
+        //when
+        target.adresToevoegen(david);
+        //
+        assertEquals(adres, david.getAdres());
+    }
+
+    @Test
+    void gebruikerKanExitKiezenAlsAdresAanmakenMisGaat() {
+        //given
+        when(cMock.vraagInput()).thenReturn(" ","exit");
+
+        //when+then
+        assertThrows(AanmaakGebruikerAfgebrokenException.class, () -> target.adresToevoegen(david));
+        assertEquals(null, david.getAdres());
     }
 }

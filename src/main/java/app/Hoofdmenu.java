@@ -12,7 +12,15 @@ import static app.GebruikerInput.gebruikerInput;
 public class Hoofdmenu {
 
     EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
-    Console c = new Console();
+    Console c;
+
+    public Hoofdmenu() {
+        c = new Console();
+    }
+
+    public Hoofdmenu(Console c) {
+        this.c = c;
+    }
 
     public void start(){
         System.out.println();
@@ -26,7 +34,7 @@ public class Hoofdmenu {
         System.out.println("[x] Afsluiten");
         System.out.print("Uw keuze: ");
 
-        switch (gebruikerInput()) {
+        switch (c.vraagInput()) {
             case "1":
                 new Inlogmenu().start(); break;
             case "2":

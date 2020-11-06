@@ -3,10 +3,20 @@ package app;
 import domein.Gebruiker;
 import inputbehandeling.AdvertentieService;
 import inputbehandeling.AdvertentieZoekService;
+import util.Console;
 
 import static app.GebruikerInput.gebruikerInput;
 
 public class Gebruikersmenu {
+
+    private Console c;
+
+    public Gebruikersmenu() {
+    }
+
+    public Gebruikersmenu(Console c) {
+        this.c = c;
+    }
 
     public void start(Gebruiker g){
         System.out.println();
@@ -23,7 +33,7 @@ public class Gebruikersmenu {
         System.out.println();
         System.out.print("Uw keuze: ");
 
-        switch (gebruikerInput()){
+        switch (c.vraagInput()){
             case "1":
                 new AdvertentieZoekService(g).start(); break;
             case "2":
