@@ -5,11 +5,14 @@ import inputbehandeling.AdvertentieService;
 import inputbehandeling.AdvertentieZoekService;
 import util.Console;
 
+import javax.persistence.EntityManager;
+
 import static app.GebruikerInput.gebruikerInput;
 
 public class Gebruikersmenu {
 
     private Console c;
+
 
     public Gebruikersmenu() {
     }

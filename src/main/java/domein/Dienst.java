@@ -12,7 +12,7 @@ import java.util.List;
 //        "WHERE dc.categorie LIKE :Categorie")
 public class Dienst extends Advertentie {
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "dienstdienstcategorie",
             joinColumns = @JoinColumn(name = "dienst"),
             inverseJoinColumns = @JoinColumn(name = "categorie"))

@@ -6,6 +6,7 @@ import dao.DienstCategorieDao;
 import dao.GebruikerDao;
 import dao.ProductCategorieDao;
 import domein.*;
+import util.Console;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -16,14 +17,32 @@ import static app.GebruikerInput.gebruikerInput;
 
 public class AdvertentieService {
 
-    EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
-    GebruikerDao gd = new GebruikerDao(em);
-    AdvertentieDao ad = new AdvertentieDao(em);
-    ProductCategorieDao pd = new ProductCategorieDao(em);
-    DienstCategorieDao dd = new DienstCategorieDao(em);
+    EntityManager em;
+    GebruikerDao gd;
+    AdvertentieDao ad;
+    ProductCategorieDao pd;
+    DienstCategorieDao dd;
     Gebruiker gebruiker;
+    Console c;
 
     public AdvertentieService(Gebruiker g) {
+        this.c = new Console();
+        this.em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
+        gd = new GebruikerDao(em);
+        ad = new AdvertentieDao(em);
+        pd = new ProductCategorieDao(em);
+        dd = new DienstCategorieDao(em);
+        this.gebruiker = gd.get(g.getId());
+    }
+
+    public AdvertentieService(Gebruiker g, Console c, EntityManager em){
+        //testing
+        this.c = c;
+        this.em = em;
+        gd = new GebruikerDao(em);
+        ad = new AdvertentieDao(em);
+        pd = new ProductCategorieDao(em);
+        dd = new DienstCategorieDao(em);
         this.gebruiker = gd.get(g.getId());
     }
 
@@ -39,7 +58,7 @@ public class AdvertentieService {
         System.out.println("[terug] terug naar gebruikersmenu");
         System.out.print("Uw keuze: ");
 
-        switch (gebruikerInput()) {
+        switch (c.vraagInput()) {
             case "1":
                 nieuwProduct();
                 break;
@@ -47,7 +66,7 @@ public class AdvertentieService {
                 nieuweDienst();
                 break;
             case "terug":
-                new Gebruikersmenu().start(gebruiker);
+                new Gebruikersmenu(c).start(gebruiker);
                 break;
             default:
                 System.out.println("Input onbekend, probeer het nog eens");
@@ -56,7 +75,7 @@ public class AdvertentieService {
         }
     }
 
-    private void nieuwProduct() {
+     void nieuwProduct() {
         String titel = verkrijgTitel();
         Double prijs = verkrijgPrijs();
         Advertentie a = new Product(titel, prijs, gebruiker);
@@ -64,7 +83,7 @@ public class AdvertentieService {
         advertentieAfmaken(a);
     }
 
-    private void nieuweDienst() {
+     void nieuweDienst() {
         String titel = verkrijgTitel();
         Double prijs = verkrijgPrijs();
         Advertentie a = new Dienst(titel, prijs, gebruiker);
@@ -72,7 +91,7 @@ public class AdvertentieService {
         advertentieAfmaken(a);
     }
 
-    private void voegProductCategorieToe(Advertentie a) {
+     void voegProductCategorieToe(Advertentie a) {
         List<ProductCategorie> catList = pd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
         catList.forEach(c -> catNamen.add(c.getCategorie()));
@@ -83,7 +102,7 @@ public class AdvertentieService {
         System.out.println("Typ hier je keuzes, gescheiden door een komma en een spatie.");
         System.out.println("Voorbeeld: optie1, optie 2");
         System.out.print("Keuze(s): ");
-        String keuzes = gebruikerInput();
+        String keuzes = c.vraagInput();
         String[] keuzesSplit = keuzes.split(", ");
 
         for (String s : keuzesSplit) {
@@ -95,9 +114,13 @@ public class AdvertentieService {
             }
         }
 
+        if (((Product)a).getCategorieLijst().size() == 0){
+            System.out.println("Geen categorieën toegevoegd. Probeer het nog eens!");
+            voegProductCategorieToe(a);
+        }
     }
 
-    private void voegDienstCategorieToe(Advertentie a) {
+     void voegDienstCategorieToe(Advertentie a) {
         List<DienstCategorie> catList = dd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
         catList.forEach(c -> catNamen.add(c.getCategorie()));
@@ -108,7 +131,7 @@ public class AdvertentieService {
         System.out.println("Typ hier je keuzes, gescheiden door een komma en een spatie.");
         System.out.println("Voorbeeld: optie1, optie 2");
         System.out.print("Keuze(s): ");
-        String keuzes = gebruikerInput();
+        String keuzes = c.vraagInput();
         String[] keuzesSplit = keuzes.split(", ");
 
         for (String s : keuzesSplit) {
@@ -119,12 +142,16 @@ public class AdvertentieService {
                 System.out.println("Niet gelukt om " + s + " toe te voegen..");
             }
         }
+         if (((Dienst)a).getCategorieLijst().size() == 0){
+             System.out.println("Geen categorieën toegevoegd. Probeer het nog eens!");
+             voegDienstCategorieToe(a);
+         }
 
     }
 
-    private String verkrijgTitel() {
+    String verkrijgTitel() {
         System.out.print("Voer hier uw titel in: ");
-        String titel = gebruikerInput();
+        String titel = c.vraagInput();
         if (titel.length() > 250) {
             System.out.println("Titel te lang! Probeer het nog eens.");
             verkrijgTitel();
@@ -136,11 +163,11 @@ public class AdvertentieService {
         return titel;
     }
 
-    private Double verkrijgPrijs() {
+    Double verkrijgPrijs() {
         System.out.print("Voer hier uw prijs in: ");
         double prijs = 11.11d;
         try {
-            prijs = Double.parseDouble(gebruikerInput());
+            prijs = Double.parseDouble(c.vraagInput());
         } catch (NumberFormatException e) {
             System.out.println("Geen geldig getal ingevoerd, probeer het nog eens.");
             verkrijgPrijs();
@@ -151,20 +178,20 @@ public class AdvertentieService {
         return prijs;
     }
 
-    private void advertentieAfmaken(Advertentie a) {
+    void advertentieAfmaken(Advertentie a) {
         System.out.println("Wilt u een beschrijving toevoegen?");
         System.out.println("[1] ja");
         System.out.println("[2] nee");
         System.out.println();
         System.out.print("Toets uw keuze: ");
-        if (gebruikerInput().equals("1")) voegBeschrijvingToe(a);
+        if (c.vraagInput().equals("1")) voegBeschrijvingToe(a);
 
         System.out.println("Wilt u een bijlage toevoegen?");
         System.out.println("[1] ja");
         System.out.println("[2] nee");
         System.out.println();
         System.out.print("Toets uw keuze: ");
-        if (gebruikerInput().equals("1")) voegBijlageToe(a);
+        if (c.vraagInput().equals("1")) voegBijlageToe(a);
 
         try {
             gd.updateAndDetach(gebruiker);
@@ -175,30 +202,30 @@ public class AdvertentieService {
         new Gebruikersmenu().start(gebruiker);
     }
 
-    private void voegBeschrijvingToe(Advertentie a) {
+    void voegBeschrijvingToe(Advertentie a) {
         System.out.println();
         System.out.print("Voeg hier uw omschrijving toe: ");
-        String beschrijving = gebruikerInput();
+        String beschrijving = c.vraagInput();
         if (beschrijving.length() > 250) {
             System.out.println("Titel te lang! Probeer het nog eens.");
             voegBeschrijvingToe(a);
         }
-        if (beschrijving.length() == 0) {
+        if (beschrijving.trim().length() == 0) {
             System.out.println("Niks ingevuld, probeer het nog eens.");
             voegBeschrijvingToe(a);
         }
         a.setOmschrijving(beschrijving);
     }
 
-    private void voegBijlageToe(Advertentie a) {
+    void voegBijlageToe(Advertentie a) {
         System.out.println();
         System.out.print("Voeg hier uw bijlage toe: ");
-        String bijlage = gebruikerInput();
+        String bijlage = c.vraagInput();
         if (bijlage.length() > 250) {
             System.out.println("Titel te lang! Probeer het nog eens.");
             voegBeschrijvingToe(a);
         }
-        if (bijlage.length() == 0) {
+        if (bijlage.trim().length() == 0) {
             System.out.println("Niks ingevuld, probeer het nog eens.");
             voegBeschrijvingToe(a);
         }

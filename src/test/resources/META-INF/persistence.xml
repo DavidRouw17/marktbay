@@ -10,6 +10,10 @@
         <class>domein.Gebruiker</class>
         <class>domein.Advertentie</class>
         <class>inputbehandeling.GebruikerService</class>
+        <class>domein.ProductCategorie</class>
+        <class>domein.DienstCategorie</class>
+        <class>domein.Dienst</class>
+        <class>domein.Product</class>
         <properties>
 <!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/> &lt;!&ndash;kan weg? &ndash;&gt;-->
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test"/>
