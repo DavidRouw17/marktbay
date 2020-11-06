@@ -9,6 +9,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> <!--kan weg? -->
         <class>domein.Gebruiker</class>
         <class>domein.Advertentie</class>
+        <class>inputbehandeling.GebruikerService</class>
         <properties>
 <!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/> &lt;!&ndash;kan weg? &ndash;&gt;-->
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test"/>

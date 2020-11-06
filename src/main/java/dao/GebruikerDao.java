@@ -35,7 +35,9 @@ public class GebruikerDao extends GeneriekeDao<Gebruiker> {
     public ArrayList<String> gebruikersNamenLijst(){
         ArrayList<String> result = new ArrayList<>();
         TypedQuery<Gebruiker> q = em.createQuery("SELECT g FROM Gebruiker g", Gebruiker.class);
-        q.getResultList().forEach(r -> result.add(r.getGebruikersnaam()));
+        for (Gebruiker gebruiker : q.getResultList()) {
+            result.add(gebruiker.getGebruikersnaam());
+        }
         return result;
     }
 

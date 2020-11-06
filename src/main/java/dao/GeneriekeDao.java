@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class GeneriekeDao<T> {
 
-    protected final EntityManager em;
+    protected EntityManager em;
 
 
     public GeneriekeDao(EntityManager em) {

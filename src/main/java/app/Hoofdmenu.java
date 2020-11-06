@@ -2,10 +2,17 @@ package app;
 
 
 import inputbehandeling.GebruikerService;
+import util.Console;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 
 import static app.GebruikerInput.gebruikerInput;
 
 public class Hoofdmenu {
+
+    EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
+    Console c = new Console();
 
     public void start(){
         System.out.println();
@@ -23,7 +30,7 @@ public class Hoofdmenu {
             case "1":
                 new Inlogmenu().start(); break;
             case "2":
-                new GebruikerService().nieuweGebruiker(); break;
+                new GebruikerService(em, c).nieuweGebruiker(); break;
             case "x":
                 System.out.println("Tot ziens!"); break;
             default:

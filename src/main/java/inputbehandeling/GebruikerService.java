@@ -6,18 +6,22 @@ import dao.GebruikerDao;
 import domein.Gebruiker;
 import enums.Bezorgwijze;
 import exceptions.AanmaakGebruikerAfgebrokenException;
+import util.Console;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import java.util.ArrayList;
-import java.util.Scanner;
+
+import static app.GebruikerInput.gebruikerInput;
 
 public class GebruikerService {
 
-    EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
-    GebruikerDao gd = new GebruikerDao(em);
-    Scanner in = new Scanner(System.in);
+    private GebruikerDao gd;
+    private Console c;
 
+    public GebruikerService(EntityManager em, Console c) {
+        this.gd = new GebruikerDao(em);
+        this.c = c;
+    }
 
     public void nieuweGebruiker() {
         System.out.println();
@@ -25,9 +29,12 @@ public class GebruikerService {
         System.out.println("Welkom nieuwe gebruiker!");
         System.out.println("******************************************");
         try {
-            String gebruikersnaam = gebruikersnaamMetChecks();
-            String email = emailadresMetChecks();
-            String wachtwoord = wachtwoordMetChecks();
+            System.out.print("Gewenste gebruikersnaam (max 20 tekens): ");
+            String gebruikersnaam = gebruikersnaamMetChecks(c.vraagInput());
+            System.out.print("Uw emailadres: ");
+            String email = emailadresMetChecks(c.vraagInput());
+            System.out.print("Uw wachtwoord: ");
+            String wachtwoord = wachtwoordMetChecks(c.vraagInput());
 
             Gebruiker nieuweGebruiker = new Gebruiker(gebruikersnaam, email, wachtwoord);
             verzendwijzenKiezen(nieuweGebruiker);
@@ -49,25 +56,28 @@ public class GebruikerService {
     }
 
 
-    private String gebruikersnaamMetChecks() {
+    String gebruikersnaamMetChecks(String g) {
         ArrayList<String> bestaandeNamen = gd.gebruikersNamenLijst();
 
-        System.out.print("Gewenste gebruikersnaam (max 20 tekens): ");
-        String gebruikersnaam = in.nextLine();
+
+        String gebruikersnaam = g;
 
         boolean teLang = gebruikersnaam.length() > 20;
         boolean bestaatAl = bestaandeNamen.contains(gebruikersnaam);
 
-        while (teLang || bestaatAl) {
+        while (teLang || bestaatAl || gebruikersnaam.length() == 0) {
             if (teLang) {
                 System.out.println("Gebruikersnaam te lang! Probeer het nog eens, of typ 'exit'");
                 System.out.print("Gewenste gebruikersnaam (max 20 tekens): ");
-            } else {
+            } else if (bestaatAl) {
                 System.out.println("Gebruikersnaam bestaat al! Probeer het nog eens, of typ 'exit'");
+                System.out.print("Gewenste gebruikersnaam (max 20 tekens): ");
+            } else {
+                System.out.println("Vergeet niet iets te typen!");
                 System.out.print("Gewenste gebruikersnaam (max 20 tekens): ");
             }
 
-            gebruikersnaam = in.nextLine();
+            gebruikersnaam = c.vraagInput();
             if (gebruikersnaam.equals("exit")) throw new AanmaakGebruikerAfgebrokenException();
 
             teLang = gebruikersnaam.length() > 20;
@@ -77,54 +87,61 @@ public class GebruikerService {
         return gebruikersnaam;
     }
 
-    private String emailadresMetChecks() {
+    String emailadresMetChecks(String e) {
         ArrayList<String> bestaandeEmails = gd.emailadresLijst();
-        System.out.print("Uw emailadres: ");
-        String email = in.nextLine();
-
+        String email = e;
 
         boolean teLang = email.length() > 250;
         boolean bestaatAl = bestaandeEmails.contains(email);
+        boolean legeString = email.length()==0;
+        boolean spatieInMail = email.split(" ").length != 1;
 
-        while (teLang || bestaatAl) {
+        while (teLang || bestaatAl || legeString || spatieInMail) {
             if (teLang) {
                 System.out.println("Emailadres te lang! Probeer het nog eens, of typ 'exit'");
                 System.out.print("Uw emailadres: ");
-            } else {
+            } else if (bestaatAl) {
                 System.out.println("Emailadres bestaat al! Probeer het nog eens, of typ 'exit'");
+                System.out.println("Uw emailadres: ");
+            } else if (legeString) {
+                System.out.println("Emailadres mag niet niks zijn! Probeer het nog eens, of typ 'exit'");
+                System.out.println("Uw emailadres: ");
+            } else{
+                System.out.println("Emailadres kan geen spatie bevatten! Probeer het nog eens, of typ 'exit'");
                 System.out.println("Uw emailadres: ");
             }
 
-            email = in.nextLine();
+            email = c.vraagInput();
             if (email.equals("exit")) throw new AanmaakGebruikerAfgebrokenException();
 
             teLang = email.length() > 250;
             bestaatAl = bestaandeEmails.contains(email);
+            legeString = email.length()==0;
+            spatieInMail = email.split(" ").length != 1;
 
         }
         return email;
     }
 
-    private String wachtwoordMetChecks() {
-        System.out.print("Uw wachtwoord: ");
-        String wachtwoord = in.nextLine();
+     String wachtwoordMetChecks(String w) {
+        String wachtwoord = w;
         boolean teLang = wachtwoord.length() > 250;
 
         while (teLang) {
             System.out.println("Wachtwoord te lang! Probeer het nog eens, of typ 'exit'");
             System.out.println("Uw wachtwoord: ");
-            wachtwoord = in.nextLine();
+            wachtwoord = c.vraagInput();
             if (wachtwoord.equals("exit")) throw new AanmaakGebruikerAfgebrokenException();
 
             teLang = wachtwoord.length() > 250;
         }
 
         System.out.print("Typ nogmaals uw wachtwoord, ter verificatie: ");
-        String wachtwoordV = in.nextLine();
+        String wachtwoordV = c.vraagInput();
 
         if (!wachtwoord.equals(wachtwoordV)) {
             System.out.println("Wachtwoord komt niet overeen! Probeer het nog eens.");
-            wachtwoordMetChecks();
+            wachtwoordMetChecks(wachtwoord);
         }
         return wachtwoord;
     }
@@ -139,7 +156,7 @@ public class GebruikerService {
         System.out.println("Typ uw keuze(s), gescheiden door een komma en een spatie.");
         System.out.println("Bijvoorbeeld: optie1, optie2");
         System.out.print("Uw keuzes: ");
-        String keuzes = in.nextLine();
+        String keuzes = gebruikerInput();
         String[] keuzesSplit = keuzes.split(", ");
         for (String s : keuzesSplit) {
             switch (s) {
@@ -172,7 +189,7 @@ public class GebruikerService {
         System.out.println();
         System.out.println("Omdat u voor de optie 'thuis afhalen' heeft gekozen, hebben we ook uw adres nodig:");
         System.out.print("Uw adres: ");
-        String adres = in.nextLine();
+        String adres = gebruikerInput();
         g.setAdres(adres);
 
         //todo if time permits nog checks toevoegen

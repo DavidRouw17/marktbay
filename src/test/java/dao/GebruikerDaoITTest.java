@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 //inclusief tests voor generieke dao
 
-class GebruikerDaoIT {
+class GebruikerDaoITTest {
 
     private final EntityManager em = Persistence.createEntityManagerFactory("H2").createEntityManager();
     private final GebruikerDao target = new GebruikerDao(em);

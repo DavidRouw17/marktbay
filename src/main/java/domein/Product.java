@@ -29,7 +29,6 @@ public class Product extends Advertentie {
 
     public void addCategorie(ProductCategorie p) {
         this.categorieLijst.add(p);
-        //p.addProduct(this);
     }
 
     public String categorieConvert(){
