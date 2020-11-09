@@ -5,14 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-//@NamedQuery(name = "Dienst.getByCategorie", query = "SELECT d " +
-//        "FROM Dienst d " +
-//        "JOIN d.categorieLijst AS dc " +
-//        "JOIN "
-//        "WHERE dc.categorie LIKE :Categorie")
 public class Dienst extends Advertentie {
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "dienstdienstcategorie",
             joinColumns = @JoinColumn(name = "dienst"),
             inverseJoinColumns = @JoinColumn(name = "categorie"))

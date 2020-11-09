@@ -252,9 +252,9 @@ public class AdvertentieService {
         a.setBijlage(bijlage);
     }
 
-    public void verwijderAdvertentie(){
+    public void verwijderAdvertentie() {
         List<Advertentie> advList = gebruiker.getAangebodenAdvertenties();
-        if (advList.size() == 0){
+        if (advList.size() == 0) {
             System.out.println("U heeft geen advertenties.");
             new Gebruikersmenu(c).start(gebruiker);
         } else {
@@ -263,13 +263,13 @@ public class AdvertentieService {
             System.out.println();
             int counter = 0;
             for (Advertentie advertentie : advList) {
-                counter ++;
+                counter++;
                 System.out.println("[" + counter + "] " + "\n" + advertentie);
             }
             System.out.print("Toets het nummer van de advertentie die u wilt verwijderen: ");
-            try{
+            try {
                 int i = Integer.parseInt(c.vraagInput());
-                if (i > 0 && i <= counter){
+                if (i > 0 && i <= counter) {
                     ad.remove(advList.get(i - 1));
                     System.out.println("Advertentie verwijderd!");
                 } else {

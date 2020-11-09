@@ -30,6 +30,15 @@ class AdvertentieDaoTest {
     @Mock
     private TypedQuery<Advertentie> tqMock;
 
+    @Mock
+    private Advertentie advertentieMock;
+
+    @Mock
+    private EntityTransaction etMock;
+
+    @Mock
+    private Gebruiker gebruikerMock;
+
     @Test
     void zoekOpSoort() {
         //given
@@ -41,6 +50,19 @@ class AdvertentieDaoTest {
         verify(emMock).createNamedQuery(anyString(), eq(Advertentie.class));
         verify(tqMock).setParameter(eq("soort"), eq(naam));
         verify(tqMock).getResultList();
-
+    }
+    @Test
+    void remove(){
+        //given
+        when(emMock.getTransaction()).thenReturn(etMock);
+        when(advertentieMock.getGebruiker()).thenReturn(gebruikerMock);
+        //when
+        target.remove(advertentieMock);
+        //then
+        verify(etMock).begin();
+        verify(emMock).remove(eq(advertentieMock));
+        verify(etMock).commit();
+        verify(advertentieMock).getGebruiker();
+        verify(gebruikerMock).verwijderAdvertentie(advertentieMock);
     }
 }

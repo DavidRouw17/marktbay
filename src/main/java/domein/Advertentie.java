@@ -25,7 +25,7 @@ public class Advertentie extends GeneriekObject {
     @ElementCollection
     private List<Bezorgwijze> bezorgwijzen;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Gebruiker eigenaarAdvertentie;
 
     public Advertentie() {
