@@ -18,5 +18,11 @@ public class AdvertentieDao extends GeneriekeDao<Advertentie> {
         return namedQuery.getResultList();
     }
 
-
+    @Override
+    public void remove(Advertentie a){
+        em.getTransaction().begin();
+        a.getGebruiker().verwijderAdvertentie(a);
+        em.remove(a);
+        em.getTransaction().commit();
+    }
 }

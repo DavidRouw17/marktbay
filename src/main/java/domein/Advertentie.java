@@ -25,7 +25,7 @@ public class Advertentie extends GeneriekObject {
     @ElementCollection
     private List<Bezorgwijze> bezorgwijzen;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Gebruiker eigenaarAdvertentie;
 
     public Advertentie() {
@@ -49,6 +49,10 @@ public class Advertentie extends GeneriekObject {
 
     public void setGebruiker(Gebruiker g){
         this.eigenaarAdvertentie = g;
+    }
+
+    public Gebruiker getGebruiker(){
+        return this.eigenaarAdvertentie;
     }
 
     public String getEigenaarNaam(){

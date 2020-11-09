@@ -1,54 +1,74 @@
 package inputbehandeling;
 
 import app.Gebruikersmenu;
+import app.Hoofdmenu;
+import dao.AdvertentieDao;
 import dao.DienstCategorieDao;
 import dao.GebruikerDao;
 import dao.ProductCategorieDao;
-import domein.Advertentie;
-import domein.DienstCategorie;
-import domein.Gebruiker;
-import domein.ProductCategorie;
+import domein.*;
+import util.Console;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import static app.GebruikerInput.gebruikerInput;
-
 public class AdvertentieZoekService {
 
-    EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
-    GebruikerDao gd = new GebruikerDao(em);
-    ProductCategorieDao pd = new ProductCategorieDao(em);
-    DienstCategorieDao dd = new DienstCategorieDao(em);
-    private Gebruiker gebruiker;
+    EntityManager em;
+    GebruikerDao gd;
+    ProductCategorieDao pd;
+    DienstCategorieDao dd;
+    AdvertentieDao ad;
+    Console c;
+    private final Gebruiker gebruiker;
 
-    public AdvertentieZoekService(Gebruiker g){
+    public AdvertentieZoekService(Gebruiker g) {
+        this.c = new Console();
+        this.em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
+        this.gd = new GebruikerDao(em);
+        this.pd = new ProductCategorieDao(em);
+        this.dd = new DienstCategorieDao(em);
+        this.ad = new AdvertentieDao(em);
         this.gebruiker = gd.get(g.getId());
     }
 
-    public void start(){
+    public AdvertentieZoekService(Gebruiker g, Console c, EntityManager em) {
+        this.c = c;
+        this.em = em;
+        this.gd = new GebruikerDao(em);
+        this.pd = new ProductCategorieDao(em);
+        this.dd = new DienstCategorieDao(em);
+        this.ad = new AdvertentieDao(em);
+        this.gebruiker = gd.get(g.getId());
+    }
+
+    public void start() {
         System.out.println("Waar wil je op zoeken?");
         System.out.println("[1] Een product (op categorie)");
         System.out.println("[2] Een dienst (op categorie)");
         System.out.println("[terug] Ga terug naar gebruikersmenu");
         System.out.print("Uw keuze: ");
 
-        switch(gebruikerInput()){
+        switch (c.vraagInput()) {
             case "1":
-                zoekProductOpCategorie(); break;
+                zoekProductOpCategorie();
+                break;
             case "2":
-                zoekDienstOpCategorie(); break;
+                zoekDienstOpCategorie();
+                break;
             case "terug":
-                new Gebruikersmenu().start(gebruiker); break;
+                new Gebruikersmenu(c).start(gebruiker);
+                break;
             default:
                 System.out.println("Input niet herkend, probeer het nog eens.");
-                new AdvertentieZoekService(gebruiker).start(); break;
+                new AdvertentieZoekService(gebruiker, c, em).start();
+                break;
         }
     }
 
-    private void zoekDienstOpCategorie(){
+    void zoekDienstOpCategorie() {
         System.out.println("Je kan kiezen uit de volgende categorieën: ");
         List<DienstCategorie> catList = dd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
@@ -56,18 +76,19 @@ public class AdvertentieZoekService {
         catNamen.forEach(System.out::println);
 
         System.out.print("Uw keuze: ");
-        String keuze = gebruikerInput();
-        if (catNamen.contains(keuze)){
-            dd.zoekOpNaam(keuze).getDienstenMetDezeCategorie().forEach(System.out::println);
+        String keuze = c.vraagInput();
+        if (catNamen.contains(keuze)) {
+            List<Dienst> l = dd.zoekOpNaam(keuze).getDienstenMetDezeCategorie();
+            l.forEach(System.out::println);
+            if (l.size() == 0) System.out.println("Er zijn nog geen diensten met deze categorie toegevoegd..");
             start();
-        }
-        else {
+        } else {
             System.out.println("Categorie niet gevonden, probeer het nog eens.");
             zoekDienstOpCategorie();
         }
     }
 
-    private void zoekProductOpCategorie(){
+    void zoekProductOpCategorie() {
         System.out.println("Je kan kiezen uit de volgende categorieën: ");
         List<ProductCategorie> catList = pd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
@@ -75,24 +96,28 @@ public class AdvertentieZoekService {
         catNamen.forEach(System.out::println);
 
         System.out.print("Uw keuze: ");
-        String keuze = gebruikerInput();
-        if (catNamen.contains(keuze)){
-            pd.zoekOpNaam(keuze).getProductenMetDezeCategorie().forEach(System.out::println);
+        String keuze = c.vraagInput();
+        if (catNamen.contains(keuze)) {
+            List<Product> l = pd.zoekOpNaam(keuze).getProductenMetDezeCategorie();
+            l.forEach(System.out::println);
+
+            if (l.size() == 0) {
+                System.out.println("Er zijn nog geen producten met deze categorie toegevoegd..");
+            }
             start();
-        }
-        else {
+        } else {
             System.out.println("Categorie niet gevonden, probeer het nog eens.");
-            zoekDienstOpCategorie();
+            zoekProductOpCategorie();
         }
     }
 
-    public void zoekEigenAdvertenties(){
+    public void zoekEigenAdvertenties() {
         System.out.println();
         System.out.println("Uw advertenties: ");
         System.out.println();
         List<Advertentie> advList = gebruiker.getAangebodenAdvertenties();
         advList.forEach(System.out::println);
-        new Gebruikersmenu().start(gebruiker);
+        new Gebruikersmenu(c).start(gebruiker);
     }
 
 }

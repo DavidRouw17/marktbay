@@ -50,6 +50,10 @@ public class Gebruiker extends GeneriekObject {
         this.aangebodenAdvertenties.add(a);
     }
 
+    public void verwijderAdvertentie(Advertentie a){
+        this.aangebodenAdvertenties.remove(a);
+    }
+
     public List<Advertentie> getAangebodenAdvertenties(){
         return aangebodenAdvertenties;
     }

@@ -7,8 +7,6 @@ import util.Console;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import static app.GebruikerInput.gebruikerInput;
-
 public class Hoofdmenu {
 
     EntityManager em = Persistence.createEntityManagerFactory("marktbayDB").createEntityManager();
@@ -22,10 +20,10 @@ public class Hoofdmenu {
         this.c = c;
     }
 
-    public void start(){
+    public void start() {
         System.out.println();
         System.out.println("******************************************");
-        System.out.println("Welkom bij de MarktBay inlogpagina!");
+        System.out.println("Welkom bij het MarktBay hoofdmenu!");
         System.out.println("Toets uw keuze!");
         System.out.println("******************************************");
 
@@ -36,14 +34,18 @@ public class Hoofdmenu {
 
         switch (c.vraagInput()) {
             case "1":
-                new Inlogmenu().start(); break;
+                new Inlogmenu().start();
+                break;
             case "2":
-                new GebruikerService(em, c).nieuweGebruiker(); break;
+                new GebruikerService(em, c).nieuweGebruiker();
+                break;
             case "x":
-                System.out.println("Tot ziens!"); break;
+                System.out.println("Tot ziens!");
+                break;
             default:
                 System.out.println("Ongeldige keuze, probeer het nog eens!");
-                new Hoofdmenu().start(); break;
+                new Hoofdmenu().start();
+                break;
         }
     }
 }

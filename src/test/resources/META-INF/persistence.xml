@@ -10,17 +10,20 @@
         <class>domein.Gebruiker</class>
         <class>domein.Advertentie</class>
         <class>inputbehandeling.GebruikerService</class>
+        <class>inputbehandeling.AdvertentieService</class>
         <class>domein.ProductCategorie</class>
         <class>domein.DienstCategorie</class>
         <class>domein.Dienst</class>
         <class>domein.Product</class>
+        <class>dao.GebruikerDao</class>
+
         <properties>
 <!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/> &lt;!&ndash;kan weg? &ndash;&gt;-->
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test"/>
             <property name="javax.persistence.jdbc.user" value="sa"/>
             <property name="javax.persistence.jdbc.password" value=""/>
             <property name="hibernate.hbm2ddl.auto" value="create"/>
-            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
         </properties>
     </persistence-unit>

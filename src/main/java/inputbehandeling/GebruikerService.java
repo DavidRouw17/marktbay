@@ -11,8 +11,6 @@ import util.Console;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 
-import static app.GebruikerInput.gebruikerInput;
-
 public class GebruikerService {
 
     private GebruikerDao gd;
@@ -155,7 +153,7 @@ public class GebruikerService {
         return wachtwoord;
     }
 
-     void verzendwijzenKiezen(Gebruiker g) {
+    void verzendwijzenKiezen(Gebruiker g) {
         System.out.println();
         System.out.println("Kies uw verzendwijzen, u kunt kiezen uit:");
         for (Bezorgwijze value : Bezorgwijze.values()) {
@@ -194,27 +192,27 @@ public class GebruikerService {
         System.out.println("Uw voorkeuren zijn toegevoegd!");
     }
 
-     void adresToevoegen(Gebruiker g) {
+    void adresToevoegen(Gebruiker g) {
         System.out.println();
         System.out.println("Omdat u voor de optie 'thuis afhalen' heeft gekozen, hebben we ook uw adres nodig:");
         System.out.print("Uw adres: ");
         String adres = c.vraagInput();
         boolean teLang = adres.length() > 255;
         boolean isLeeg = adres.trim().length() == 0;
-         while (teLang || isLeeg) {
-             if (teLang) {
-                 System.out.println("Adres te lang! Probeer het nog eens, of typ 'exit'");
-                 System.out.println("Uw adres: ");
-             } else {
-                 System.out.println("Adres mag niet leeg zijn! Probeer het nog eens, of typ 'exit'");
-                 System.out.println("Uw adres: ");
-             }
-             adres = c.vraagInput();
-             if (adres.equals("exit")) throw new AanmaakGebruikerAfgebrokenException();
+        while (teLang || isLeeg) {
+            if (teLang) {
+                System.out.println("Adres te lang! Probeer het nog eens, of typ 'exit'");
+                System.out.println("Uw adres: ");
+            } else {
+                System.out.println("Adres mag niet leeg zijn! Probeer het nog eens, of typ 'exit'");
+                System.out.println("Uw adres: ");
+            }
+            adres = c.vraagInput();
+            if (adres.equals("exit")) throw new AanmaakGebruikerAfgebrokenException();
 
-             teLang = adres.length() > 250;
-             isLeeg = adres.trim().length() == 0;
-         }
+            teLang = adres.length() > 250;
+            isLeeg = adres.trim().length() == 0;
+        }
         g.setAdres(adres);
 
 

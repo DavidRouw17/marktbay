@@ -1,6 +1,7 @@
 package inputbehandeling;
 
 import app.Gebruikersmenu;
+import app.Hoofdmenu;
 import dao.AdvertentieDao;
 import dao.DienstCategorieDao;
 import dao.GebruikerDao;
@@ -13,17 +14,15 @@ import javax.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import static app.GebruikerInput.gebruikerInput;
-
 public class AdvertentieService {
 
-    EntityManager em;
-    GebruikerDao gd;
-    AdvertentieDao ad;
-    ProductCategorieDao pd;
-    DienstCategorieDao dd;
-    Gebruiker gebruiker;
-    Console c;
+    private final EntityManager em;
+    private final GebruikerDao gd;
+    private final AdvertentieDao ad;
+    private final ProductCategorieDao pd;
+    private final DienstCategorieDao dd;
+    private final Gebruiker gebruiker;
+    private final Console c;
 
     public AdvertentieService(Gebruiker g) {
         this.c = new Console();
@@ -35,7 +34,7 @@ public class AdvertentieService {
         this.gebruiker = gd.get(g.getId());
     }
 
-    public AdvertentieService(Gebruiker g, Console c, EntityManager em){
+    public AdvertentieService(Gebruiker g, Console c, EntityManager em) {
         //testing
         this.c = c;
         this.em = em;
@@ -75,7 +74,7 @@ public class AdvertentieService {
         }
     }
 
-     void nieuwProduct() {
+    void nieuwProduct() {
         String titel = verkrijgTitel();
         Double prijs = verkrijgPrijs();
         Advertentie a = new Product(titel, prijs, gebruiker);
@@ -83,7 +82,7 @@ public class AdvertentieService {
         advertentieAfmaken(a);
     }
 
-     void nieuweDienst() {
+    void nieuweDienst() {
         String titel = verkrijgTitel();
         Double prijs = verkrijgPrijs();
         Advertentie a = new Dienst(titel, prijs, gebruiker);
@@ -91,7 +90,7 @@ public class AdvertentieService {
         advertentieAfmaken(a);
     }
 
-     void voegProductCategorieToe(Advertentie a) {
+    void voegProductCategorieToe(Advertentie a) {
         List<ProductCategorie> catList = pd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
         catList.forEach(c -> catNamen.add(c.getCategorie()));
@@ -114,13 +113,13 @@ public class AdvertentieService {
             }
         }
 
-        if (((Product)a).getCategorieLijst().size() == 0){
+        if (((Product) a).getCategorieLijst().size() == 0) {
             System.out.println("Geen categorieën toegevoegd. Probeer het nog eens!");
             voegProductCategorieToe(a);
         }
     }
 
-     void voegDienstCategorieToe(Advertentie a) {
+    void voegDienstCategorieToe(Advertentie a) {
         List<DienstCategorie> catList = dd.findAll();
         ArrayList<String> catNamen = new ArrayList<>();
         catList.forEach(c -> catNamen.add(c.getCategorie()));
@@ -138,42 +137,50 @@ public class AdvertentieService {
             try {
                 DienstCategorie p = dd.zoekOpNaam(s);
                 ((Dienst) a).addCategorie(p);
+                System.out.println(s + " toegevoegd!");
             } catch (Exception e) {
                 System.out.println("Niet gelukt om " + s + " toe te voegen..");
             }
         }
-         if (((Dienst)a).getCategorieLijst().size() == 0){
-             System.out.println("Geen categorieën toegevoegd. Probeer het nog eens!");
-             voegDienstCategorieToe(a);
-         }
+        if (((Dienst) a).getCategorieLijst().size() == 0) {
+            System.out.println("Geen categorieën toegevoegd. Probeer het nog eens!");
+            voegDienstCategorieToe(a);
+        }
 
     }
 
     String verkrijgTitel() {
         System.out.print("Voer hier uw titel in: ");
         String titel = c.vraagInput();
-        if (titel.length() > 250) {
-            System.out.println("Titel te lang! Probeer het nog eens.");
-            verkrijgTitel();
-        }
-        if (titel.length() == 0) {
-            System.out.println("Niks ingevuld, probeer het nog eens.");
-            verkrijgTitel();
+        boolean teLang = titel.length() > 254;
+        boolean isLeeg = titel.trim().length() == 0;
+
+        while (teLang || isLeeg) {
+            if (teLang) {
+                System.out.print("Titel te lang! Probeer het nog eens: ");
+
+            } else {
+                System.out.print("Niks ingevuld, probeer het nog eens: ");
+            }
+            titel = c.vraagInput();
+            teLang = titel.length() > 254;
+            isLeeg = titel.trim().length() == 0;
         }
         return titel;
     }
 
     Double verkrijgPrijs() {
         System.out.print("Voer hier uw prijs in: ");
-        double prijs = 11.11d;
-        try {
-            prijs = Double.parseDouble(c.vraagInput());
-        } catch (NumberFormatException e) {
-            System.out.println("Geen geldig getal ingevoerd, probeer het nog eens.");
-            verkrijgPrijs();
-        } catch (NullPointerException e) {
-            System.out.println("Niks ingevoerd, probeer het nog eens.");
-            verkrijgPrijs();
+        double prijs = 0;
+        boolean nietGoedIngevuld = true;
+        while (nietGoedIngevuld) {
+            try {
+                prijs = Double.parseDouble(c.vraagInput());
+            } catch (NumberFormatException e) {
+                System.out.print("Geen geldig getal ingevoerd, probeer het nog eens: ");
+                continue;
+            }
+            nietGoedIngevuld = false;
         }
         return prijs;
     }
@@ -199,20 +206,27 @@ public class AdvertentieService {
         } catch (RuntimeException e) {
             System.out.println("Er ging iets mis: " + e.getMessage() + ", bel uw java programmeur!");
         }
-        new Gebruikersmenu().start(gebruiker);
+        new Gebruikersmenu(c).start(gebruiker);
     }
 
     void voegBeschrijvingToe(Advertentie a) {
         System.out.println();
         System.out.print("Voeg hier uw omschrijving toe: ");
         String beschrijving = c.vraagInput();
-        if (beschrijving.length() > 250) {
-            System.out.println("Titel te lang! Probeer het nog eens.");
-            voegBeschrijvingToe(a);
-        }
-        if (beschrijving.trim().length() == 0) {
-            System.out.println("Niks ingevuld, probeer het nog eens.");
-            voegBeschrijvingToe(a);
+        boolean teLang = beschrijving.length() > 250;
+        boolean isLeeg = beschrijving.trim().length() == 0;
+
+        while (teLang || isLeeg) {
+            if (teLang) {
+                System.out.println("Titel te lang! Probeer het nog eens.");
+                System.out.print("Voeg hier uw omschrijving toe: ");
+            } else {
+                System.out.println("Niks ingevuld, probeer het nog eens.");
+                System.out.print("Voeg hier uw omschrijving toe: ");
+            }
+            beschrijving = c.vraagInput();
+            teLang = beschrijving.length() > 250;
+            isLeeg = beschrijving.trim().length() == 0;
         }
         a.setOmschrijving(beschrijving);
     }
@@ -221,14 +235,47 @@ public class AdvertentieService {
         System.out.println();
         System.out.print("Voeg hier uw bijlage toe: ");
         String bijlage = c.vraagInput();
-        if (bijlage.length() > 250) {
-            System.out.println("Titel te lang! Probeer het nog eens.");
-            voegBeschrijvingToe(a);
-        }
-        if (bijlage.trim().length() == 0) {
-            System.out.println("Niks ingevuld, probeer het nog eens.");
-            voegBeschrijvingToe(a);
+        boolean teLang = bijlage.length() > 250;
+        boolean isLeeg = bijlage.trim().length() == 0;
+        while (teLang || isLeeg) {
+            if (teLang) {
+                System.out.println("Titel te lang! Probeer het nog eens.");
+                System.out.print("Voeg hier uw bijlage toe: ");
+            } else {
+                System.out.println("Niks ingevuld, probeer het nog eens.");
+                System.out.print("Voeg hier uw bijlage toe: ");
+            }
+            bijlage = c.vraagInput();
+            teLang = bijlage.length() > 250;
+            isLeeg = bijlage.trim().length() == 0;
         }
         a.setBijlage(bijlage);
+    }
+
+    public void verwijderAdvertentie(){
+        List<Advertentie> advList = gebruiker.getAangebodenAdvertenties();
+        if (advList.size() == 0){
+            System.out.println("U heeft geen advertenties.");
+            new Gebruikersmenu(c).start(gebruiker);
+        } else {
+            System.out.println();
+            System.out.println("Uw advertenties: ");
+            System.out.println();
+            int counter = 0;
+            for (Advertentie advertentie : advList) {
+                counter ++;
+                System.out.println("[" + counter + "] " + advertentie);
+            }
+            System.out.print("Toets het nummer van de advertentie die u wilt verwijderen: ");
+            try{
+                int i = Integer.parseInt(c.vraagInput());
+                ad.remove(advList.get(i-1));
+                System.out.println("Advertentie verwijderd!");
+                new Gebruikersmenu(c).start(gebruiker);
+            } catch (NumberFormatException e) {
+                System.out.println("Input niet herkend. U wordt terug gestuurd naar het hoofdmenu.");
+                new Hoofdmenu(c).start();
+            }
+        }
     }
 }
