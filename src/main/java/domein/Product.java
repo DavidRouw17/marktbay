@@ -7,7 +7,7 @@ import java.util.List;
 @Entity
 public class Product extends Advertentie {
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "productproductcategorie",
             joinColumns = @JoinColumn(name = "product"),
             inverseJoinColumns = @JoinColumn(name = "categorie"))

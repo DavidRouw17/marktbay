@@ -264,13 +264,17 @@ public class AdvertentieService {
             int counter = 0;
             for (Advertentie advertentie : advList) {
                 counter ++;
-                System.out.println("[" + counter + "] " + advertentie);
+                System.out.println("[" + counter + "] " + "\n" + advertentie);
             }
             System.out.print("Toets het nummer van de advertentie die u wilt verwijderen: ");
             try{
                 int i = Integer.parseInt(c.vraagInput());
-                ad.remove(advList.get(i-1));
-                System.out.println("Advertentie verwijderd!");
+                if (i > 0 && i <= counter){
+                    ad.remove(advList.get(i - 1));
+                    System.out.println("Advertentie verwijderd!");
+                } else {
+                    System.out.println("Dat getal was geen optie.");
+                }
                 new Gebruikersmenu(c).start(gebruiker);
             } catch (NumberFormatException e) {
                 System.out.println("Input niet herkend. U wordt terug gestuurd naar het hoofdmenu.");

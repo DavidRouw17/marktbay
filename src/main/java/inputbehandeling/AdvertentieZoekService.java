@@ -112,11 +112,16 @@ public class AdvertentieZoekService {
     }
 
     public void zoekEigenAdvertenties() {
-        System.out.println();
-        System.out.println("Uw advertenties: ");
-        System.out.println();
         List<Advertentie> advList = gebruiker.getAangebodenAdvertenties();
-        advList.forEach(System.out::println);
+        if (advList.size() == 0){
+            System.out.println("U heeft nog geen advertenties.");
+        }
+        else {
+            System.out.println();
+            System.out.println("Uw advertenties: ");
+            System.out.println();
+            advList.forEach(System.out::println);
+        }
         new Gebruikersmenu(c).start(gebruiker);
     }
 
